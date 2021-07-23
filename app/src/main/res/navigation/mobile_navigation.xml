@@ -9,7 +9,11 @@
         android:id="@+id/nav_notes"
         android:name="com.example.mynotes.ui.notes.NotesFragment"
         android:label="Notes"
-        tools:layout="@layout/fragment_notes" />
+        tools:layout="@layout/fragment_notes" >
+        <action
+            android:id="@+id/action_nav_notes_to_detailsFragment"
+            app:destination="@id/detailsFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_label"
@@ -22,4 +26,22 @@
         android:name="com.example.mynotes.ui.archive.ArchiveFragment"
         android:label="Archive"
         tools:layout="@layout/fragment_archive" />
+    <fragment
+        android:id="@+id/detailsFragment"
+        android:name="com.example.mynotes.DetailsFragment"
+        android:label="fragment_details"
+        tools:layout="@layout/fragment_details" >
+        <argument
+            android:name="noteTitle"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="noteDetails"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="notePosition"
+            app:argType="string"
+            app:nullable="true" />
+    </fragment>
 </navigation>
