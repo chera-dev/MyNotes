@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.mynotes.R
 import com.google.android.material.snackbar.Snackbar
 
-class NotesAdapter(var notesList:List<Data>, var onItemClick: (Data,Int) -> Unit = { data: Data, i: Int -> })
+class NotesAdapter(var notesList:List<Data>, private val itemListener: ItemListener)
     :RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     inner class NoteCardViewHolder(view: View): RecyclerView.ViewHolder(view){
@@ -19,14 +19,22 @@ class NotesAdapter(var notesList:List<Data>, var onItemClick: (Data,Int) -> Unit
             item_title = view.findViewById(R.id.item_title)
             item_details = view.findViewById(R.id.item_details)
             view.setOnLongClickListener {
-                Snackbar.make(view,"long clicked ${item_title.text}",Snackbar.LENGTH_SHORT).show()
+                //Snackbar.make(view,"long clicked note ${item_title.text}",Snackbar.LENGTH_SHORT).show()
+                //onItemLongClick(notesList[position],position)
+                itemListener.onLongClick(position)
                 return@setOnLongClickListener true
             }
             view.setOnClickListener {
-                Toast.makeText(view.context, "clicked ${item_title.text}", Toast.LENGTH_SHORT).show()
-                onItemClick(notesList[position], position)
+                //Toast.makeText(view.context, "clicked note ${item_title.text}", Toast.LENGTH_SHORT).show()
+                //onItemClick(notesList[position], position)
+                itemListener.onClick(position)
             }
         }
+    }
+
+    fun changeData(newList: List<Data>){
+        notesList = newList
+        notifyDataSetChanged()
     }
 
     inner class LabelCardViewHolder(view: View): RecyclerView.ViewHolder(view){
@@ -34,7 +42,15 @@ class NotesAdapter(var notesList:List<Data>, var onItemClick: (Data,Int) -> Unit
         init {
             item_label = view.findViewById(R.id.item_label)
             view.setOnClickListener {
-                onItemClick(notesList[position],position)
+                //Toast.makeText(view.context, "clicked label ${item_label.text}", Toast.LENGTH_SHORT).show()
+                //onItemClick(notesList[position],position)
+                itemListener.onClick(position)
+            }
+            view.setOnLongClickListener {
+                //Snackbar.make(view,"long clicked label ${item_label.text}",Snackbar.LENGTH_SHORT).show()
+                //onItemLongClick(notesList[position],position)
+                itemListener.onLongClick(position)
+                return@setOnLongClickListener true
             }
         }
     }
@@ -44,8 +60,14 @@ class NotesAdapter(var notesList:List<Data>, var onItemClick: (Data,Int) -> Unit
         when(data) {
             is Note -> {
                 holder as NoteCardViewHolder
-                holder.item_title.text = data.noteTitle
-                holder.item_details.text = data.noteDetails
+                if (data.noteTitle.isNotEmpty()) {
+                    holder.item_title.visibility = View.VISIBLE
+                    holder.item_title.text = data.noteTitle
+                }
+                if (data.noteDetails.isNotEmpty()) {
+                    holder.item_details.visibility = View.VISIBLE
+                    holder.item_details.text = data.noteDetails
+                }
             }
             is Label -> {
                 holder as LabelCardViewHolder

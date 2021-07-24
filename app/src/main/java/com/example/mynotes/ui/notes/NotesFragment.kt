@@ -9,13 +9,17 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.mynotes.MenuBottomDialog
 import com.example.mynotes.databinding.FragmentNotesBinding
 import com.example.mynotes.ui.Note
 import com.example.mynotes.ui.NotesAdapter
 import com.example.mynotes.SharedViewModel
+import com.example.mynotes.ui.Data
+import com.example.mynotes.ui.ItemListener
+import com.example.mynotes.ui.Note.Companion.NOTES
 import com.google.android.material.snackbar.Snackbar
 
-class NotesFragment : Fragment() {
+class NotesFragment : Fragment(),ItemListener {
 
     //private lateinit var notesViewModel: NotesViewModel
     private val sharedSharedViewModel: SharedViewModel by activityViewModels()
@@ -44,14 +48,15 @@ class NotesFragment : Fragment() {
       binding.fab.setOnClickListener { view ->
         /*Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
           .setAction("Action", null).show()*/
-        view?.findNavController()?.navigate(NotesFragmentDirections.actionNavNotesToDetailsFragment(null,null,null))
+        view?.findNavController()?.navigate(NotesFragmentDirections.actionNavNotesToDetailsFragment(null,null,null,null))
       }
 
       //setHasOptionsMenu(true)
 
-      notesList = sharedSharedViewModel.noteList
+      notesList = sharedSharedViewModel.noteList.filter { it.noteType == NOTES }
       recyclerView = binding.notesRecyclerView
-      recyclerAdapter = NotesAdapter(notesList, onItemClick = {note,position -> onNoteClick(note as Note,position) })
+      recyclerAdapter = NotesAdapter(notesList, this)
+      //recyclerAdapter = NotesAdapter(notesList, onItemClick = {note,position -> onNoteClick(note as Note,position) }, onItemLongClick = {note,position -> onNoteClick(note as Note,position) })
       recyclerView.adapter = recyclerAdapter
       recyclerView.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL,false)
 
@@ -91,10 +96,15 @@ class NotesFragment : Fragment() {
     return root
   }
 
+   /* fun onNoteLongClick(note: Note,notePosition: Int){
+        Toast.makeText(requireContext(),"in notes fragment long clicked note ${note.noteTitle}", Toast.LENGTH_SHORT).show()
+    }
+
   fun onNoteClick(note:Note, notePosition: Int){
-    Snackbar.make(requireView(),"in mainactivity method",Snackbar.LENGTH_SHORT).show()
-    view?.findNavController()?.navigate(NotesFragmentDirections.actionNavNotesToDetailsFragment(note.noteTitle,note.noteDetails,notePosition.toString()))
-  }
+      Toast.makeText(requireContext(),"in notes fragment clicked note ${note.noteTitle}", Toast.LENGTH_SHORT).show()
+    view?.findNavController()?.navigate(NotesFragmentDirections.actionNavNotesToDetailsFragment(note.noteTitle,note.noteDetails,notePosition.toString(),
+        NOTES.toString()))
+  }*/
 
   /*override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
     super.onCreateOptionsMenu(menu, inflater)
@@ -105,5 +115,32 @@ class NotesFragment : Fragment() {
   override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    override fun onClick(position: Int) {
+        val data:Note = recyclerAdapter.notesList[position] as Note
+        //Toast.makeText(requireContext(),"in notes fragment clicked note ${data.noteTitle}", Toast.LENGTH_SHORT).show()
+        view?.findNavController()?.navigate(NotesFragmentDirections.actionNavNotesToDetailsFragment(data.noteTitle,data.noteDetails,position.toString(),
+            NOTES.toString()))
+    }
+
+    override fun onLongClick(position: Int) {
+        val data:Note = recyclerAdapter.notesList[position] as Note
+        Toast.makeText(requireContext(),"in notes fragment long clicked note ${data.noteTitle}", Toast.LENGTH_SHORT).show()
+        MenuBottomDialog(requireContext())
+            .addItem(MenuBottomDialog.Operation("archive") {
+                Toast.makeText(requireContext(),"archive clicked",Toast.LENGTH_SHORT).show()
+                sharedSharedViewModel.addToArchive(position)
+                recyclerAdapter.notifyDataSetChanged()
+            })
+            .addItem(MenuBottomDialog.Operation("delete") {
+                Toast.makeText(requireContext(),"delete clicked",Toast.LENGTH_SHORT).show()
+                sharedSharedViewModel.deleteNote(data)
+                recyclerAdapter.changeData(sharedSharedViewModel.noteList.filter { it.noteType == NOTES })
+                //change delete,archive methods in bottom dialog of notes and archivefragment
+            })
+            .addItem(MenuBottomDialog.Operation("labels"){
+                Toast.makeText(requireContext(),"delete clicked",Toast.LENGTH_SHORT).show()
+            }).show()
     }
 }
