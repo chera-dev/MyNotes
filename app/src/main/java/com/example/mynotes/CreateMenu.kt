@@ -12,4 +12,7 @@ class CreateMenu(val menu: Menu) {
                 true
             }
     }
+    fun changeIcon(itemId: Int,iconId: Int){
+        menu.getItem(itemId).setIcon(iconId)
+    }
 }

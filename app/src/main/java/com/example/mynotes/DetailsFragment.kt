@@ -62,6 +62,7 @@ class DetailsFragment : Fragment() {
             createMenu.addMenuItem(Menu.NONE, 1, 2, "unPin",
                 R.drawable.ic_baseline_push_unpin_24, MenuItem.SHOW_AS_ACTION_ALWAYS, onclick = { itemTitle ->
                     Toast.makeText(requireContext(), "$itemTitle clicked", Toast.LENGTH_SHORT).show()
+                    createMenu.changeIcon(1,R.drawable.ic_outline_push_pin_24)
                     pinned = UNPINNED
                 })
         }
@@ -69,6 +70,7 @@ class DetailsFragment : Fragment() {
             createMenu.addMenuItem(Menu.NONE, 1, 2, "pin",
                 R.drawable.ic_outline_push_pin_24, MenuItem.SHOW_AS_ACTION_ALWAYS, onclick = { itemTitle ->
                     Toast.makeText(requireContext(), "$itemTitle clicked", Toast.LENGTH_SHORT).show()
+                    createMenu.changeIcon(1,R.drawable.ic_baseline_push_unpin_24)
                     pinned = PINNED
                 })
         }
