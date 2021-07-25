@@ -20,6 +20,7 @@ class DetailsFragment : Fragment() {
     private lateinit var editedNote:Note
     private var pinned:Int? = null
     private var noteType:Int? = null
+    private var noteId:Int? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -30,7 +31,6 @@ class DetailsFragment : Fragment() {
         val args = DetailsFragmentArgs.fromBundle(requireArguments())
         val titleEditText:EditText = inflate.findViewById(R.id.titleTextViewInDetails)
         val detailsEditText:EditText = inflate.findViewById(R.id.detailsTextViewInDetails)
-        var noteId:Int? = null
         if(args.noteId != null && args.noteType != null) {
             titleEditText.setText(args.noteTitle)
             detailsEditText.setText(args.noteDetails)
@@ -41,7 +41,7 @@ class DetailsFragment : Fragment() {
         inflate.findViewById<FloatingActionButton>(R.id.fab_update_notes).setOnClickListener {
             editedNote = Note(titleEditText.text.toString(),detailsEditText.text.toString(), NOTES,0)
             if (noteId != null && noteType != null) {
-                editedNote.noteId = noteId
+                editedNote.noteId = noteId as Int
                 editedNote.noteType = noteType as Int
                 editedNote.pinned = pinned!!
                 sharedSharedViewModel.updateNotes(editedNote)
@@ -50,33 +50,57 @@ class DetailsFragment : Fragment() {
                 sharedSharedViewModel.addNewNotes(editedNote)
             findNavController().popBackStack()
         }
-        if (noteType != null)
-            setHasOptionsMenu(true)
+        setHasOptionsMenu(true)
         return inflate
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         val createMenu = CreateMenu(menu)
-        //works fine.. but pin drawable is not changed
-        if (pinned!! == PINNED){
-            createMenu.addMenuItem(Menu.NONE, 1, 2, "unPin",
-                R.drawable.ic_baseline_push_unpin_24, MenuItem.SHOW_AS_ACTION_ALWAYS, onclick = { itemTitle ->
+        if (noteType != ARCHIVED){
+            if (pinned!! == PINNED) {
+                createMenu.addMenuItem(Menu.NONE, 1, 2, "unPin", R.drawable.ic_baseline_push_unpin_24,
+                    MenuItem.SHOW_AS_ACTION_ALWAYS, onclick = { itemTitle ->
+                        Toast.makeText(requireContext(), "$itemTitle clicked", Toast.LENGTH_SHORT).show()
+                        createMenu.changeIcon(1, R.drawable.ic_outline_push_pin_24)
+                        pinned = UNPINNED
+                        sharedSharedViewModel.unpinNote(noteId as Int)
+                    })
+            } else {
+                createMenu.addMenuItem(Menu.NONE, 1, 2, "pin", R.drawable.ic_outline_push_pin_24,
+                    MenuItem.SHOW_AS_ACTION_ALWAYS, onclick = { itemTitle ->
+                        Toast.makeText(requireContext(), "$itemTitle clicked", Toast.LENGTH_SHORT).show()
+                        createMenu.changeIcon(1, R.drawable.ic_baseline_push_unpin_24)
+                        pinned = PINNED
+                        sharedSharedViewModel.pinNotes(noteId as Int)
+                    })
+            }
+            createMenu.addMenuItem(Menu.NONE, 2, 3, "delete", R.drawable.ic_baseline_delete_24,
+                MenuItem.SHOW_AS_ACTION_ALWAYS, onclick = { itemTitle ->
                     Toast.makeText(requireContext(), "$itemTitle clicked", Toast.LENGTH_SHORT).show()
-                    createMenu.changeIcon(1,R.drawable.ic_outline_push_pin_24)
-                    pinned = UNPINNED
+                    sharedSharedViewModel.deleteNote(noteId as Int)
+                    findNavController().popBackStack()
+                })
+            createMenu.addMenuItem(Menu.NONE, 3, 1, "archive", R.drawable.ic_baseline_archive_24,
+                MenuItem.SHOW_AS_ACTION_ALWAYS, onclick = { itemTitle ->
+                    Toast.makeText(requireContext(), "$itemTitle clicked", Toast.LENGTH_SHORT).show()
+                    sharedSharedViewModel.addToArchive(noteId as Int)
+                    findNavController().popBackStack()
                 })
         }
         else{
-            createMenu.addMenuItem(Menu.NONE, 1, 2, "pin",
-                R.drawable.ic_outline_push_pin_24, MenuItem.SHOW_AS_ACTION_ALWAYS, onclick = { itemTitle ->
+            createMenu.addMenuItem(Menu.NONE, 1, 1, "unarchive", R.drawable.ic_baseline_unarchive_24,
+                MenuItem.SHOW_AS_ACTION_ALWAYS, onclick = { itemTitle ->
                     Toast.makeText(requireContext(), "$itemTitle clicked", Toast.LENGTH_SHORT).show()
-                    createMenu.changeIcon(1,R.drawable.ic_baseline_push_unpin_24)
-                    pinned = PINNED
+                    sharedSharedViewModel.removeFromArchive(noteId as Int)
+                    findNavController().popBackStack()
+                })
+            createMenu.addMenuItem(Menu.NONE, 2, 2, "delete", R.drawable.ic_baseline_delete_24,
+                MenuItem.SHOW_AS_ACTION_ALWAYS, onclick = { itemTitle ->
+                    Toast.makeText(requireContext(), "$itemTitle clicked", Toast.LENGTH_SHORT).show()
+                    sharedSharedViewModel.deleteNote(noteId as Int)
+                    findNavController().popBackStack()
                 })
         }
-        createMenu.addMenuItem(Menu.NONE,2,1,"delete",R.drawable.ic_baseline_delete_24,MenuItem.SHOW_AS_ACTION_ALWAYS
-            ,onclick = {itemTitle -> Toast.makeText(requireContext(),"$itemTitle clicked",Toast.LENGTH_SHORT).show() })
-
         inflater.inflate(R.menu.main,menu)
         super.onCreateOptionsMenu(menu, inflater)
     }
