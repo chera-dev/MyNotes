@@ -4,20 +4,19 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mynotes.R
-import com.google.android.material.snackbar.Snackbar
 
 class NotesAdapter(var notesList:List<Data>, private val itemListener: ItemListener)
     :RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     inner class NoteCardViewHolder(view: View): RecyclerView.ViewHolder(view){
-        var item_title:TextView
-        var item_details:TextView
+        var itemTitle:TextView
+        var itemDetails:TextView
         init {
-            item_title = view.findViewById(R.id.item_title)
-            item_details = view.findViewById(R.id.item_details)
+            itemTitle = view.findViewById(R.id.item_title)
+            itemDetails = view.findViewById(R.id.item_details)
+
             view.setOnLongClickListener {
                 //Snackbar.make(view,"long clicked note ${item_title.text}",Snackbar.LENGTH_SHORT).show()
                 //onItemLongClick(notesList[position],position)
@@ -38,9 +37,9 @@ class NotesAdapter(var notesList:List<Data>, private val itemListener: ItemListe
     }
 
     inner class LabelCardViewHolder(view: View): RecyclerView.ViewHolder(view){
-        var item_label:TextView
+        var itemLabel:TextView
         init {
-            item_label = view.findViewById(R.id.item_label)
+            itemLabel = view.findViewById(R.id.item_label)
             view.setOnClickListener {
                 //Toast.makeText(view.context, "clicked label ${item_label.text}", Toast.LENGTH_SHORT).show()
                 //onItemClick(notesList[position],position)
@@ -61,17 +60,17 @@ class NotesAdapter(var notesList:List<Data>, private val itemListener: ItemListe
             is Note -> {
                 holder as NoteCardViewHolder
                 if (data.noteTitle.isNotEmpty()) {
-                    holder.item_title.visibility = View.VISIBLE
-                    holder.item_title.text = data.noteTitle
+                    holder.itemTitle.visibility = View.VISIBLE
+                    holder.itemTitle.text = data.noteTitle
                 }
                 if (data.noteDetails.isNotEmpty()) {
-                    holder.item_details.visibility = View.VISIBLE
-                    holder.item_details.text = data.noteDetails
+                    holder.itemDetails.visibility = View.VISIBLE
+                    holder.itemDetails.text = data.noteDetails
                 }
             }
             is Label -> {
                 holder as LabelCardViewHolder
-                holder.item_label.text = data.labelName
+                holder.itemLabel.text = data.labelName
             }
         }
     }

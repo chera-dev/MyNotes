@@ -14,7 +14,6 @@ import com.example.mynotes.SharedViewModel
 import com.example.mynotes.databinding.FragmentLabelBinding
 import com.example.mynotes.ui.ItemListener
 import com.example.mynotes.ui.Label
-import com.example.mynotes.ui.Note
 import com.example.mynotes.ui.NotesAdapter
 
 class LabelFragment : Fragment() ,ItemListener{
@@ -42,7 +41,7 @@ class LabelFragment : Fragment() ,ItemListener{
         //  textView.text = "This is label Fragment"
 
         recyclerView = binding.labelRecyclerView
-        labelList = sharedSharedViewModel.labelList
+        labelList = sharedSharedViewModel.getLabel()
         recyclerAdapter = NotesAdapter(labelList , this )
         //recyclerAdapter = NotesAdapter(labelList , onItemClick = {label,position -> onLabelClick(label as Label,position) }, onItemLongClick = {label,position -> onLabelLongClick(label as Label,position) })
         recyclerView.adapter = recyclerAdapter

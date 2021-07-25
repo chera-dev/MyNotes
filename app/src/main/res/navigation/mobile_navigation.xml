@@ -43,11 +43,15 @@
             app:argType="string"
             app:nullable="true" />
         <argument
-            android:name="notePosition"
+            android:name="noteId"
             app:argType="string"
             app:nullable="true" />
         <argument
             android:name="noteType"
+            app:argType="string"
+            app:nullable="true" />
+        <argument
+            android:name="pinned"
             app:argType="string"
             app:nullable="true" />
     </fragment>

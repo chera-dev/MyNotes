@@ -10,11 +10,16 @@ import androidx.navigation.fragment.findNavController
 import com.example.mynotes.ui.Note
 import com.example.mynotes.ui.Note.Companion.ARCHIVED
 import com.example.mynotes.ui.Note.Companion.NOTES
+import com.example.mynotes.ui.Note.Companion.PINNED
+import com.example.mynotes.ui.Note.Companion.UNPINNED
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class DetailsFragment : Fragment() {
 
     private val sharedSharedViewModel: SharedViewModel by activityViewModels()
+    private lateinit var editedNote:Note
+    private var pinned:Int? = null
+    private var noteType:Int? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -25,36 +30,48 @@ class DetailsFragment : Fragment() {
         val args = DetailsFragmentArgs.fromBundle(requireArguments())
         val titleEditText:EditText = inflate.findViewById(R.id.titleTextViewInDetails)
         val detailsEditText:EditText = inflate.findViewById(R.id.detailsTextViewInDetails)
-        var notePosition:Int? = null
-        var noteType:Int? =null
-        if(args.notePosition != null && args.noteType != null) {
+        var noteId:Int? = null
+        if(args.noteId != null && args.noteType != null) {
             titleEditText.setText(args.noteTitle)
             detailsEditText.setText(args.noteDetails)
-            notePosition = args.notePosition!!.toInt()
+            noteId = args.noteId!!.toInt()
             noteType = args.noteType!!.toInt()
+            pinned = args.pinned!!.toInt()
         }
         inflate.findViewById<FloatingActionButton>(R.id.fab_update_notes).setOnClickListener {
-            val editedNote = Note(titleEditText.text.toString(),detailsEditText.text.toString(), NOTES)
-            if (notePosition != null) {
-                if (noteType == ARCHIVED) {
-                    editedNote.noteType = ARCHIVED
-                    sharedSharedViewModel.updateArchivedNotes(editedNote, notePosition)
-                }
-                else
-                    sharedSharedViewModel.updateNotes(editedNote, notePosition)
+            editedNote = Note(titleEditText.text.toString(),detailsEditText.text.toString(), NOTES,0)
+            if (noteId != null && noteType != null) {
+                editedNote.noteId = noteId
+                editedNote.noteType = noteType as Int
+                editedNote.pinned = pinned!!
+                sharedSharedViewModel.updateNotes(editedNote)
             }
             else
                 sharedSharedViewModel.addNewNotes(editedNote)
             findNavController().popBackStack()
         }
-        setHasOptionsMenu(true)
+        if (noteType != null)
+            setHasOptionsMenu(true)
         return inflate
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         val createMenu = CreateMenu(menu)
-        createMenu.addMenuItem(Menu.NONE,1,2,"pin",R.drawable.ic_outline_push_pin_24
-            ,MenuItem.SHOW_AS_ACTION_ALWAYS,onclick = { itemTitle -> Toast.makeText(requireContext(),"$itemTitle clicked",Toast.LENGTH_SHORT).show() })
+        //works fine.. but pin drawable is not changed
+        if (pinned!! == PINNED){
+            createMenu.addMenuItem(Menu.NONE, 1, 2, "unPin",
+                R.drawable.ic_baseline_push_unpin_24, MenuItem.SHOW_AS_ACTION_ALWAYS, onclick = { itemTitle ->
+                    Toast.makeText(requireContext(), "$itemTitle clicked", Toast.LENGTH_SHORT).show()
+                    pinned = UNPINNED
+                })
+        }
+        else{
+            createMenu.addMenuItem(Menu.NONE, 1, 2, "pin",
+                R.drawable.ic_outline_push_pin_24, MenuItem.SHOW_AS_ACTION_ALWAYS, onclick = { itemTitle ->
+                    Toast.makeText(requireContext(), "$itemTitle clicked", Toast.LENGTH_SHORT).show()
+                    pinned = PINNED
+                })
+        }
         createMenu.addMenuItem(Menu.NONE,2,1,"delete",R.drawable.ic_baseline_delete_24,MenuItem.SHOW_AS_ACTION_ALWAYS
             ,onclick = {itemTitle -> Toast.makeText(requireContext(),"$itemTitle clicked",Toast.LENGTH_SHORT).show() })
 

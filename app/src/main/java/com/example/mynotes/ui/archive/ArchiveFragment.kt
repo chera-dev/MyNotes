@@ -41,7 +41,7 @@ class ArchiveFragment : Fragment(),ItemListener {
         //val textView: TextView = binding.textSlideshow
         //textView.text = "This is Archive Fragment"
 
-        archiveNotes = sharedSharedViewModel.archiveList
+        archiveNotes = sharedSharedViewModel.getArchivedNotes()
         recyclerView = binding.archiveRecyclerView
         recyclerAdapter = NotesAdapter(archiveNotes,  this)
         //recyclerAdapter = NotesAdapter(archiveNotes, onItemClick = { note, position -> onArchiveNotesClick(note as Note,position)},onItemLongClick = {note,position -> onArchiveNotesClick(note as Note,position)})
@@ -70,8 +70,8 @@ class ArchiveFragment : Fragment(),ItemListener {
     override fun onClick(position: Int) {
         val data:Note = recyclerAdapter.notesList[position] as Note
         //Toast.makeText(requireContext(),"in archive fragment clicked note ${data.noteTitle}", Toast.LENGTH_SHORT).show()
-        view?.findNavController()?.navigate(ArchiveFragmentDirections.actionNavArchiveToDetailsFragment(data.noteTitle,data.noteDetails,position.toString(),
-            ARCHIVED.toString()))
+        view?.findNavController()?.navigate(ArchiveFragmentDirections.actionNavArchiveToDetailsFragment(data.noteTitle,data.noteDetails,data.noteId.toString(),
+            ARCHIVED.toString(), data.pinned.toString()))
     }
 
     override fun onLongClick(position: Int) {
@@ -80,13 +80,16 @@ class ArchiveFragment : Fragment(),ItemListener {
         MenuBottomDialog(requireContext())
             .addItem(MenuBottomDialog.Operation("unarchive") {
                 Toast.makeText(requireContext(),"unarchive clicked",Toast.LENGTH_SHORT).show()
-                sharedSharedViewModel.removeFromArchive(position)
-                recyclerAdapter.notifyDataSetChanged()
+                sharedSharedViewModel.removeFromArchive(data.noteId)
+                recyclerAdapter.changeData(sharedSharedViewModel.getArchivedNotes())
+                archiveNotes = sharedSharedViewModel.getArchivedNotes()
             })
             .addItem(MenuBottomDialog.Operation("delete") {
                 Toast.makeText(requireContext(),"delete clicked",Toast.LENGTH_SHORT).show()
-                sharedSharedViewModel.deleteNote(data)
-                recyclerAdapter.changeData(sharedSharedViewModel.noteList.filter { it.noteType == Note.ARCHIVED })
+                sharedSharedViewModel.deleteNote(data.noteId)
+                recyclerAdapter.changeData(sharedSharedViewModel.getArchivedNotes())
+                archiveNotes = sharedSharedViewModel.getArchivedNotes()
+                //recyclerAdapter.changeData(sharedSharedViewModel.noteList.filter { it.noteType == Note.ARCHIVED })
             }).show()
     }
 }

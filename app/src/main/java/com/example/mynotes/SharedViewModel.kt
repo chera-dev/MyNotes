@@ -1,63 +1,91 @@
 package com.example.mynotes
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.mynotes.ui.Label
 import com.example.mynotes.ui.Note
 import com.example.mynotes.ui.Note.Companion.ARCHIVED
 import com.example.mynotes.ui.Note.Companion.NOTES
+import com.example.mynotes.ui.Note.Companion.PINNED
+import com.example.mynotes.ui.Note.Companion.UNPINNED
 
 class SharedViewModel : ViewModel() {
 
-    private val _noteList = mutableListOf<Note>()
-    val noteList: List<Note>
-        get() = _noteList//.filter { it.noteType == NOTES }
+    private val _noteList = mutableMapOf<Int,Note>()
 
-    val archiveList: List<Note>
-        get() = _noteList.filter { it.noteType == ARCHIVED }
-
-    private val _labelList = mutableListOf<Label>()
-    val labelList: List<Label>
-        get() = _labelList
+    private val _labelList = mutableMapOf<Int,Label>()
 
     private var nextNoteId:Int = 5
     private var nextLabelId:Int = 3
 
     init {
-        _noteList.add(Note(1,"Chera","I'm a good girl", NOTES))
-        _noteList.add(Note(2,"Dev","I'm a bad girl", NOTES))
+        _noteList[1] = (Note("Chera","I'm a good girl", NOTES,1))
+        _noteList[2] = (Note("Dev","I'm a bad girl", NOTES,2, 1))
 
-        _labelList.add(Label(1,"important"))
-        _labelList.add(Label(2,"not important"))
+        _labelList[1] = (Label(1, "important"))
+        _labelList[2] = (Label(2,"not important"))
 
-        _noteList.add(Note(3,"archived note one","details of archived note one", ARCHIVED))
-        _noteList.add(Note(4,"archived note two","details of archived note two", ARCHIVED))
+        _noteList[3] = (Note( "archived note one","details of archived note one", ARCHIVED,3))
+        _noteList[4] = (Note( "archived note two","details of archived note two", ARCHIVED,4))
+    }
+
+    fun getNotes():List<Note>{
+        val noteList = mutableListOf<Note>()
+        for (i in _noteList.values)
+            if (i.noteType == NOTES)
+                noteList.add(i)
+        //noteList.sortBy { it.pinned }
+        noteList.sortByDescending { it.pinned }
+        return noteList
+    }
+
+    fun getArchivedNotes():List<Note>{
+        val archivedNoteList = mutableListOf<Note>()
+        for (i in _noteList.values)
+            if (i.noteType == ARCHIVED)
+                archivedNoteList.add(i)
+        return archivedNoteList
+    }
+
+    fun getLabel():List<Label>{
+        val labelList = mutableListOf<Label>()
+        for (i in _labelList.values)
+            labelList.add(i)
+        return labelList
+    }
+    //add label
+    //rename label
+    //delete label
+    //new fragment to display notes of that label
+    //onclick on those displayed notes goes to details fragment
+
+
+    fun pinNotes(noteId: Int){
+        _noteList[noteId]?.pinned = PINNED
+    }
+
+    fun unpinNote(noteId: Int){
+        _noteList[noteId]?.pinned = UNPINNED
     }
 
     fun addNewNotes(newNote: Note){
-        newNote.noteId = nextNoteId++
-        _noteList.add(newNote)
+        newNote.noteId = nextNoteId
+        _noteList[nextNoteId++] = newNote
     }
 
-    fun updateNotes(updatedNote:Note,position:Int){
-        _noteList[position] = updatedNote
+    fun updateNotes(updatedNote:Note){
+        _noteList[updatedNote.noteId] = updatedNote
     }
 
-    fun addToArchive(position: Int){
-        _noteList[position].noteType = ARCHIVED
+    fun addToArchive(noteId: Int){
+        _noteList[noteId]?.noteType = ARCHIVED
     }
 
-    fun updateArchivedNotes(updatedNote:Note,position:Int){
-        //_noteList[position] = updatedNote
+    fun removeFromArchive(noteId: Int){
+        _noteList[noteId]?.noteType = NOTES
     }
 
-    fun removeFromArchive(position: Int){
-        _noteList[position].noteType = NOTES
-    }
-
-    fun deleteNote(deleteNote: Note){
-        _noteList.remove(deleteNote)
+    fun deleteNote(noteId: Int){
+        _noteList.remove(noteId)
     }
 
 }
