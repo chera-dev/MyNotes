@@ -11,11 +11,16 @@ class NotesAdapter(var notesList:List<Data>, private val itemListener: ItemListe
     :RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     inner class NoteCardViewHolder(view: View): RecyclerView.ViewHolder(view){
-        var itemTitle:TextView
-        var itemDetails:TextView
+        val itemTitle:TextView
+        val itemDetails:TextView
+        val itemDate:TextView
+        val itemTime:TextView
+
         init {
             itemTitle = view.findViewById(R.id.item_title)
             itemDetails = view.findViewById(R.id.item_details)
+            itemDate = view.findViewById(R.id.item_date)
+            itemTime = view.findViewById(R.id.item_time)
 
             view.setOnLongClickListener {
                 //Snackbar.make(view,"long clicked note ${item_title.text}",Snackbar.LENGTH_SHORT).show()
@@ -67,6 +72,8 @@ class NotesAdapter(var notesList:List<Data>, private val itemListener: ItemListe
                     holder.itemDetails.visibility = View.VISIBLE
                     holder.itemDetails.text = data.noteDetails
                 }
+                holder.itemDate.text = data.dateCreated
+                holder.itemTime.text = data.timeCreated
             }
             is Label -> {
                 holder as LabelCardViewHolder

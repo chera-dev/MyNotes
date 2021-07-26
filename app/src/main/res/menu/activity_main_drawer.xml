@@ -15,10 +15,10 @@
     <group
         android:id="@+id/group2"
         android:checkableBehavior="single">
-            <item
-                android:id="@+id/nav_label"
-                android:icon="@drawable/ic_menu_gallery"
-                android:title="Label" />
+        <item
+            android:id="@+id/nav_label"
+            android:icon="@drawable/ic_outline_label_black_24"
+            android:title="Label" />
     </group>
 
     <group
@@ -27,7 +27,7 @@
 
         <item
             android:id="@+id/nav_archive"
-            android:icon="@drawable/ic_menu_slideshow"
+            android:icon="@drawable/ic_baseline_archive_black_24"
             android:title="Archive" />
     </group>
 </menu>

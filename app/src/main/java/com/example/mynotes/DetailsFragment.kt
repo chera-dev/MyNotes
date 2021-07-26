@@ -1,5 +1,6 @@
 package com.example.mynotes
 
+import android.os.Build
 import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.Fragment
@@ -13,6 +14,7 @@ import com.example.mynotes.ui.Note.Companion.NOTES
 import com.example.mynotes.ui.Note.Companion.PINNED
 import com.example.mynotes.ui.Note.Companion.UNPINNED
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import kotlin.math.PI
 
 class DetailsFragment : Fragment() {
 
@@ -21,6 +23,8 @@ class DetailsFragment : Fragment() {
     private var pinned:Int? = null
     private var noteType:Int? = null
     private var noteId:Int? = null
+
+    //use binding var
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -46,24 +50,28 @@ class DetailsFragment : Fragment() {
                 editedNote.pinned = pinned!!
                 sharedSharedViewModel.updateNotes(editedNote)
             }
-            else
+            else {
+                editedNote.pinned = pinned!!
                 sharedSharedViewModel.addNewNotes(editedNote)
+            }
             findNavController().popBackStack()
         }
         setHasOptionsMenu(true)
         return inflate
     }
 
+
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         val createMenu = CreateMenu(menu)
         if (noteType != ARCHIVED){
-            if (pinned!! == PINNED) {
+            if (pinned == PINNED) {
                 createMenu.addMenuItem(Menu.NONE, 1, 2, "unPin", R.drawable.ic_baseline_push_unpin_24,
                     MenuItem.SHOW_AS_ACTION_ALWAYS, onclick = { itemTitle ->
                         Toast.makeText(requireContext(), "$itemTitle clicked", Toast.LENGTH_SHORT).show()
                         createMenu.changeIcon(1, R.drawable.ic_outline_push_pin_24)
                         pinned = UNPINNED
-                        sharedSharedViewModel.unpinNote(noteId as Int)
+                        if(noteId != null)
+                            sharedSharedViewModel.unpinNote(noteId as Int)
                     })
             } else {
                 createMenu.addMenuItem(Menu.NONE, 1, 2, "pin", R.drawable.ic_outline_push_pin_24,
@@ -71,7 +79,8 @@ class DetailsFragment : Fragment() {
                         Toast.makeText(requireContext(), "$itemTitle clicked", Toast.LENGTH_SHORT).show()
                         createMenu.changeIcon(1, R.drawable.ic_baseline_push_unpin_24)
                         pinned = PINNED
-                        sharedSharedViewModel.pinNotes(noteId as Int)
+                        if(noteId != null)
+                            sharedSharedViewModel.pinNotes(noteId as Int)
                     })
             }
             createMenu.addMenuItem(Menu.NONE, 2, 3, "delete", R.drawable.ic_baseline_delete_24,

@@ -1,5 +1,6 @@
 package com.example.mynotes
 
+import android.os.Build
 import androidx.lifecycle.ViewModel
 import com.example.mynotes.ui.Label
 import com.example.mynotes.ui.Note
@@ -7,6 +8,7 @@ import com.example.mynotes.ui.Note.Companion.ARCHIVED
 import com.example.mynotes.ui.Note.Companion.NOTES
 import com.example.mynotes.ui.Note.Companion.PINNED
 import com.example.mynotes.ui.Note.Companion.UNPINNED
+
 
 class SharedViewModel : ViewModel() {
 
@@ -34,6 +36,7 @@ class SharedViewModel : ViewModel() {
             if (i.noteType == NOTES)
                 noteList.add(i)
         //noteList.sortBy { it.pinned }
+        noteList.sortByDescending { it.noteId }
         noteList.sortByDescending { it.pinned }
         return noteList
     }

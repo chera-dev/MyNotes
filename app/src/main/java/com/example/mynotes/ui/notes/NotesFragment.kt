@@ -1,8 +1,10 @@
 package com.example.mynotes.ui.notes
 
+import android.os.Build
 import android.os.Bundle
 import android.view.*
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
@@ -26,6 +28,7 @@ class NotesFragment : Fragment(),ItemListener {
     private lateinit var recyclerView: RecyclerView
     private lateinit var recyclerAdapter: NotesAdapter
     private lateinit var notesList: List<Note>
+
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
       //notesViewModel = ViewModelProvider(this).get(NotesViewModel::class.java)
