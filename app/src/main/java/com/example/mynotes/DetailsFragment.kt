@@ -1,6 +1,5 @@
 package com.example.mynotes
 
-import android.os.Build
 import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.Fragment
@@ -8,13 +7,13 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import com.example.mynotes.ui.Label
 import com.example.mynotes.ui.Note
 import com.example.mynotes.ui.Note.Companion.ARCHIVED
 import com.example.mynotes.ui.Note.Companion.NOTES
 import com.example.mynotes.ui.Note.Companion.PINNED
 import com.example.mynotes.ui.Note.Companion.UNPINNED
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import kotlin.math.PI
 
 class DetailsFragment : Fragment() {
 
@@ -110,6 +109,22 @@ class DetailsFragment : Fragment() {
                     findNavController().popBackStack()
                 })
         }
+        createMenu.addMenuItem(Menu.NONE,4,4,"add label",R.drawable.ic_outline_label_24,
+            MenuItem.SHOW_AS_ACTION_ALWAYS, onclick = {itemTitle ->
+                Toast.makeText(requireContext(), "$itemTitle clicked", Toast.LENGTH_SHORT).show()
+                //add label using popup menu
+                val popupwindow = PopUpLabelLayout(requireContext())
+                    val labelListOfThisNote = noteId?.let {
+                        sharedSharedViewModel.getLabelsOfThisNote(
+                            it
+                        )
+                    }
+                for (i in labelListOfThisNote!!) {
+                    popupwindow.addItem(i)
+                }
+                popupwindow.addItem(Label(0,"Add new label"))
+                popupwindow.showAsDropDown(view)
+            })
         inflater.inflate(R.menu.main,menu)
         super.onCreateOptionsMenu(menu, inflater)
     }

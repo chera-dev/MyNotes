@@ -58,7 +58,8 @@ class SharedViewModel : ViewModel() {
         return labelList
     }
 
-    fun addLabel(label:Label){
+    fun addLabel(labelTitle :String){
+        val label = Label(nextLabelId,labelTitle)
         _labelList[nextLabelId++] = label
     }
 
@@ -82,6 +83,13 @@ class SharedViewModel : ViewModel() {
         for (i in _noteList[noteId]?.getLabelsOfThisNote()!!)
             labelName.add(_labelList[i]!!.labelName)
         return labelName
+    }
+
+    fun getLabelsOfThisNote(noteId: Int):List<Label>{
+        val label = mutableListOf<Label>()
+        for (i in _noteList[noteId]?.getLabelsOfThisNote()!!)
+            label.add(_labelList[i]!!)
+        return label
     }
 
     fun getNotesOfTheLabel(labelId: Int):List<Note>{

@@ -1,15 +1,16 @@
 package com.example.mynotes.ui.label
 
+import android.app.AlertDialog
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import android.widget.EditText
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.mynotes.CreateMenu
 import com.example.mynotes.MenuBottomDialog
 import com.example.mynotes.R
 import com.example.mynotes.SharedViewModel
@@ -48,6 +49,8 @@ class LabelFragment : Fragment() ,ItemListener, LabelClickListener{
         //recyclerAdapter = NotesAdapter(labelList , onItemClick = {label,position -> onLabelClick(label as Label,position) }, onItemLongClick = {label,position -> onLabelLongClick(label as Label,position) })
         recyclerView.adapter = recyclerAdapter
         recyclerView.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL,false)
+
+        setHasOptionsMenu(true)
 
         return root
     }
@@ -106,5 +109,26 @@ class LabelFragment : Fragment() ,ItemListener, LabelClickListener{
         Snackbar.make(requireView(),"in label fragment ${data.noteTitle}",Snackbar.LENGTH_SHORT).show()
         findNavController().navigate(LabelFragmentDirections.actionNavLabelToDetailsFragment(data.noteTitle,data.noteDetails
         ,data.noteId.toString(),data.noteType.toString(),data.pinned.toString()))
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        val createMenu = CreateMenu(menu)
+        createMenu.addMenuItem(Menu.NONE,1,1,"add new label",R.drawable.ic_outline_label_24,
+            MenuItem.SHOW_AS_ACTION_ALWAYS or MenuItem.SHOW_AS_ACTION_WITH_TEXT, onclick = {itemTitle ->
+                Toast.makeText(requireContext(), "$itemTitle clicked", Toast.LENGTH_SHORT).show()
+                val builder = AlertDialog.Builder(requireContext())
+                builder.setTitle("Add new label")
+                val dialogLayout = layoutInflater.inflate(R.layout.add_label,null)
+                val titleEditText = dialogLayout.findViewById<EditText>(R.id.label_title_edit_text)
+                builder.setView(dialogLayout)
+                builder.setPositiveButton("Add Label"){ _, _ ->
+                    Toast.makeText(requireContext(),"test ${titleEditText.text} added",Toast.LENGTH_SHORT).show()
+                    sharedSharedViewModel.addLabel(titleEditText.text.toString())
+                    labelList = sharedSharedViewModel.getLabel()
+                    recyclerAdapter.changeData(labelList)
+                }
+                builder.show()
+            })
+        super.onCreateOptionsMenu(menu, inflater)
     }
 }
