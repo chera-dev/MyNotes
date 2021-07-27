@@ -10,7 +10,7 @@ import com.example.mynotes.R
 import com.example.mynotes.SharedViewModel
 import com.example.mynotes.StringAdapter
 
-class NotesAdapter(var notesList:List<Data>, private val itemListener: ItemListener?, private val sharedViewModel: SharedViewModel)
+class NotesAdapter(var notesList:List<Data>, private val itemListener: ItemListener?, private val sharedViewModel: SharedViewModel?)
     :RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     inner class NoteCardViewHolder(view: View): RecyclerView.ViewHolder(view){
@@ -81,13 +81,19 @@ class NotesAdapter(var notesList:List<Data>, private val itemListener: ItemListe
                 }
                 holder.itemDate.text = data.dateCreated
                 holder.itemTime.text = data.timeCreated
-                val label:List<String> = sharedViewModel.getLabelNamesInTheNote(data.noteId)
-                //no need for get label function in shared view model
-                if (label.isNotEmpty()){
-                    holder.labelTag.visibility = View.VISIBLE
-                    val adapter = StringAdapter(label)
-                    holder.recyclerView.adapter = adapter
-                    holder.recyclerView.layoutManager = LinearLayoutManager(holder.itemView.context, LinearLayoutManager.HORIZONTAL,false)
+                if (sharedViewModel!=null){
+                    val label: List<String> = sharedViewModel.getLabelNamesInTheNote(data.noteId)
+                    //no need for get label function in shared view model
+                    if (label.isNotEmpty()) {
+                        holder.labelTag.visibility = View.VISIBLE
+                        val adapter = StringAdapter(label)
+                        holder.recyclerView.adapter = adapter
+                        holder.recyclerView.layoutManager = LinearLayoutManager(
+                            holder.itemView.context,
+                            LinearLayoutManager.HORIZONTAL,
+                            false
+                        )
+                    }
                 }
             }
             is Label -> {

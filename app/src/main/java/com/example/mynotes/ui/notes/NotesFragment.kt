@@ -28,13 +28,16 @@ class NotesFragment : Fragment(),ItemListener {
     private lateinit var recyclerView: RecyclerView
     private lateinit var recyclerAdapter: NotesAdapter
     private lateinit var notesList: List<Note>
-
+    //private var labelId:Int? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
       //notesViewModel = ViewModelProvider(this).get(NotesViewModel::class.java)
 
       _binding = FragmentNotesBinding.inflate(inflater, container, false)
       val root: View = binding.root
+
+        //val args = NotesFragmentArgs.fromBundle(requireArguments())
+        //labelId = args.labelId?.toInt()
 
       /*val textView: TextView = binding.textHome
       notesViewModel.text.observe(viewLifecycleOwner, Observer {
@@ -49,7 +52,10 @@ class NotesFragment : Fragment(),ItemListener {
 
       //setHasOptionsMenu(true)
 
-      notesList = sharedSharedViewModel.getNotes()
+        //if (labelId != null)
+            //notesList = sharedSharedViewModel.getNotesOfTheLabel(labelId!!)
+        //else
+            notesList = sharedSharedViewModel.getNotes()
       recyclerView = binding.notesRecyclerView
       recyclerAdapter = NotesAdapter(notesList, this,sharedSharedViewModel)
       //recyclerAdapter = NotesAdapter(notesList, onItemClick = {note,position -> onNoteClick(note as Note,position) }, onItemLongClick = {note,position -> onNoteClick(note as Note,position) })

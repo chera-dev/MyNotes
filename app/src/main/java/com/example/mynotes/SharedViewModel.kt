@@ -1,6 +1,5 @@
 package com.example.mynotes
 
-import android.os.Build
 import androidx.lifecycle.ViewModel
 import com.example.mynotes.ui.Label
 import com.example.mynotes.ui.Note
@@ -27,7 +26,7 @@ class SharedViewModel : ViewModel() {
         _labelList[2] = (Label(2,"not important"))
 
         _noteList[2]?.addLabelToThisNote(1)
-        _labelList[2]?.addNoteToThisLabel(2)
+        _labelList[1]?.addNoteToThisLabel(2)
 
         _noteList[3] = (Note( "archived note one","details of archived note one", ARCHIVED,3))
         _noteList[4] = (Note( "archived note two","details of archived note two", ARCHIVED,4))
@@ -68,6 +67,8 @@ class SharedViewModel : ViewModel() {
     }
 
     fun deleteLabel(labelId: Int){
+        //delete label id in notes
+        //for(i in _labelList)
         _labelList.remove(labelId)
     }
 
@@ -83,8 +84,11 @@ class SharedViewModel : ViewModel() {
         return labelName
     }
 
-    fun getNotesOfTheLabel(labelId: Int):List<Int>{
-        return _labelList[labelId]?.getNotesOfThisLabel()!!
+    fun getNotesOfTheLabel(labelId: Int):List<Note>{
+        val notesListOfLabelId = mutableListOf<Note>()
+        for (i in _labelList[labelId]?.getNotesIdInThisLabel()!!)
+            notesListOfLabelId.add(_noteList[i]!!)
+        return notesListOfLabelId
     }
 
     //add label
@@ -108,7 +112,10 @@ class SharedViewModel : ViewModel() {
     }
 
     fun updateNotes(updatedNote:Note){
-        _noteList[updatedNote.noteId] = updatedNote
+        _noteList[updatedNote.noteId]?.noteTitle = updatedNote.noteTitle
+        _noteList[updatedNote.noteId]?.noteDetails = updatedNote.noteDetails
+        _noteList[updatedNote.noteId]?.noteType = updatedNote.noteType
+        _noteList[updatedNote.noteId]?.pinned = updatedNote.pinned
     }
 
     fun addToArchive(noteId: Int){

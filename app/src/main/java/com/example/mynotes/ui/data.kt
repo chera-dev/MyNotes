@@ -7,7 +7,7 @@ import java.time.format.FormatStyle
 sealed class Data
 
 
-data class Note(val noteTitle:String, val noteDetails:String, var noteType: Int, var noteId: Int, var pinned:Int = UNPINNED):Data(){
+data class Note(var noteTitle:String, var noteDetails:String, var noteType: Int, var noteId: Int, var pinned:Int = UNPINNED):Data(){
 
     private val currentDateTime: LocalDateTime = LocalDateTime.now()
     val timeCreated = currentDateTime.format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT))
@@ -38,7 +38,7 @@ data class Label(val labelId:Int, var labelName:String):Data(){
         notesIdInThisLabel.add(noteId)
     }
 
-    fun getNotesOfThisLabel():List<Int>{
+    fun getNotesIdInThisLabel():List<Int>{
         return notesIdInThisLabel
     }
 }

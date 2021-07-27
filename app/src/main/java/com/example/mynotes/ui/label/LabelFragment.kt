@@ -7,14 +7,18 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mynotes.MenuBottomDialog
+import com.example.mynotes.R
 import com.example.mynotes.SharedViewModel
 import com.example.mynotes.databinding.FragmentLabelBinding
 import com.example.mynotes.ui.ItemListener
 import com.example.mynotes.ui.Label
 import com.example.mynotes.ui.NotesAdapter
+import com.example.mynotes.ui.NotesDialogFragment
+import com.example.mynotes.ui.notes.NotesFragment
 
 class LabelFragment : Fragment() ,ItemListener{
 
@@ -42,7 +46,7 @@ class LabelFragment : Fragment() ,ItemListener{
 
         recyclerView = binding.labelRecyclerView
         labelList = sharedSharedViewModel.getLabel()
-        recyclerAdapter = NotesAdapter(labelList , this ,sharedSharedViewModel)
+        recyclerAdapter = NotesAdapter(labelList , this ,null)
         //recyclerAdapter = NotesAdapter(labelList , onItemClick = {label,position -> onLabelClick(label as Label,position) }, onItemLongClick = {label,position -> onLabelLongClick(label as Label,position) })
         recyclerView.adapter = recyclerAdapter
         recyclerView.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL,false)
@@ -65,7 +69,18 @@ class LabelFragment : Fragment() ,ItemListener{
 
     override fun onClick(position: Int) {
         val data:Label = recyclerAdapter.notesList[position] as Label
-        Toast.makeText(requireContext(),"in label fragment clicked label ${data.labelName}",Toast.LENGTH_SHORT).show()
+        //Toast.makeText(requireContext(),"in label fragment clicked label ${data.labelName}",Toast.LENGTH_SHORT).show()
+        val fragmentManager = activity?.supportFragmentManager
+        val notesDialog = NotesDialogFragment(data.labelId)
+        notesDialog.show(fragmentManager!!,"notesDialog")
+        /*val transaction = activity?.supportFragmentManager?.beginTransaction()
+        val notesFragment = NotesFragment()
+        val args = Bundle()
+        args.putInt("labelId",data.labelId)
+        notesFragment.arguments = args
+        transaction?.replace(R.id.nav_host_fragment_content_main,notesFragment)
+        transaction?.commit()*/
+        //findNavController().navigate(LabelFragmentDirections.actionNavLabelToNavNotes(data.labelId.toString()))
     }
 
     override fun onLongClick(position: Int) {
@@ -74,9 +89,17 @@ class LabelFragment : Fragment() ,ItemListener{
         MenuBottomDialog(requireContext())
             .addItem(MenuBottomDialog.Operation("rename") {
                 Toast.makeText(requireContext(),"rename clicked",Toast.LENGTH_SHORT).show()
+                sharedSharedViewModel.renameLabel(data.labelId,"chera test")
+                //change label name by alert dialog
+                //add label by alert dialog
+                labelList = sharedSharedViewModel.getLabel()
+                recyclerAdapter.changeData(labelList)
             })
             .addItem(MenuBottomDialog.Operation("delete") {
                 Toast.makeText(requireContext(),"delete clicked",Toast.LENGTH_SHORT).show()
+                sharedSharedViewModel.deleteLabel(data.labelId)
+                labelList = sharedSharedViewModel.getLabel()
+                recyclerAdapter.changeData(labelList)
             }).show()
     }
 }
