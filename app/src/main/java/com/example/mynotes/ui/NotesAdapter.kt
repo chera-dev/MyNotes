@@ -4,10 +4,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mynotes.R
+import com.example.mynotes.SharedViewModel
+import com.example.mynotes.StringAdapter
 
-class NotesAdapter(var notesList:List<Data>, private val itemListener: ItemListener)
+class NotesAdapter(var notesList:List<Data>, private val itemListener: ItemListener?, private val sharedViewModel: SharedViewModel)
     :RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     inner class NoteCardViewHolder(view: View): RecyclerView.ViewHolder(view){
@@ -15,23 +18,27 @@ class NotesAdapter(var notesList:List<Data>, private val itemListener: ItemListe
         val itemDetails:TextView
         val itemDate:TextView
         val itemTime:TextView
+        val recyclerView:RecyclerView
+        val labelTag:TextView
 
         init {
             itemTitle = view.findViewById(R.id.item_title)
             itemDetails = view.findViewById(R.id.item_details)
             itemDate = view.findViewById(R.id.item_date)
             itemTime = view.findViewById(R.id.item_time)
+            recyclerView = view.findViewById(R.id.label_recycler_view)
+            labelTag = view.findViewById(R.id.label_tag)
 
             view.setOnLongClickListener {
                 //Snackbar.make(view,"long clicked note ${item_title.text}",Snackbar.LENGTH_SHORT).show()
                 //onItemLongClick(notesList[position],position)
-                itemListener.onLongClick(position)
+                itemListener?.onLongClick(position)
                 return@setOnLongClickListener true
             }
             view.setOnClickListener {
                 //Toast.makeText(view.context, "clicked note ${item_title.text}", Toast.LENGTH_SHORT).show()
                 //onItemClick(notesList[position], position)
-                itemListener.onClick(position)
+                itemListener?.onClick(position)
             }
         }
     }
@@ -48,12 +55,12 @@ class NotesAdapter(var notesList:List<Data>, private val itemListener: ItemListe
             view.setOnClickListener {
                 //Toast.makeText(view.context, "clicked label ${item_label.text}", Toast.LENGTH_SHORT).show()
                 //onItemClick(notesList[position],position)
-                itemListener.onClick(position)
+                itemListener?.onClick(position)
             }
             view.setOnLongClickListener {
                 //Snackbar.make(view,"long clicked label ${item_label.text}",Snackbar.LENGTH_SHORT).show()
                 //onItemLongClick(notesList[position],position)
-                itemListener.onLongClick(position)
+                itemListener?.onLongClick(position)
                 return@setOnLongClickListener true
             }
         }
@@ -74,6 +81,14 @@ class NotesAdapter(var notesList:List<Data>, private val itemListener: ItemListe
                 }
                 holder.itemDate.text = data.dateCreated
                 holder.itemTime.text = data.timeCreated
+                val label:List<String> = sharedViewModel.getLabelNamesInTheNote(data.noteId)
+                //no need for get label function in shared view model
+                if (label.isNotEmpty()){
+                    holder.labelTag.visibility = View.VISIBLE
+                    val adapter = StringAdapter(label)
+                    holder.recyclerView.adapter = adapter
+                    holder.recyclerView.layoutManager = LinearLayoutManager(holder.itemView.context, LinearLayoutManager.HORIZONTAL,false)
+                }
             }
             is Label -> {
                 holder as LabelCardViewHolder

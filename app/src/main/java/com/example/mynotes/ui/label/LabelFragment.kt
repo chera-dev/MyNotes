@@ -42,7 +42,7 @@ class LabelFragment : Fragment() ,ItemListener{
 
         recyclerView = binding.labelRecyclerView
         labelList = sharedSharedViewModel.getLabel()
-        recyclerAdapter = NotesAdapter(labelList , this )
+        recyclerAdapter = NotesAdapter(labelList , this ,sharedSharedViewModel)
         //recyclerAdapter = NotesAdapter(labelList , onItemClick = {label,position -> onLabelClick(label as Label,position) }, onItemLongClick = {label,position -> onLabelLongClick(label as Label,position) })
         recyclerView.adapter = recyclerAdapter
         recyclerView.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL,false)

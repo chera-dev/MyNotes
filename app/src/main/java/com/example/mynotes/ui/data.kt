@@ -1,6 +1,5 @@
 package com.example.mynotes.ui
 
-import android.os.Build
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
@@ -14,6 +13,16 @@ data class Note(val noteTitle:String, val noteDetails:String, var noteType: Int,
     val timeCreated = currentDateTime.format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT))
     val dateCreated = currentDateTime.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM))
 
+    private val labelOfThisNote = mutableListOf<Int>()
+
+    fun addLabelToThisNote(labelId: Int){
+        labelOfThisNote.add(labelId)
+    }
+
+    fun getLabelsOfThisNote():List<Int>{
+        return labelOfThisNote
+    }
+
     companion object{
         const val NOTES = 1
         const val ARCHIVED = 2
@@ -22,5 +31,15 @@ data class Note(val noteTitle:String, val noteDetails:String, var noteType: Int,
     }
 }
 
-data class Label(val labelId:Int, val labelName:String):Data()
+data class Label(val labelId:Int, var labelName:String):Data(){
+    private val notesIdInThisLabel = mutableListOf<Int>()
+
+    fun addNoteToThisLabel(noteId: Int){
+        notesIdInThisLabel.add(noteId)
+    }
+
+    fun getNotesOfThisLabel():List<Int>{
+        return notesIdInThisLabel
+    }
+}
 

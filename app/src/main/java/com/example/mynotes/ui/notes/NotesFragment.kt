@@ -51,7 +51,7 @@ class NotesFragment : Fragment(),ItemListener {
 
       notesList = sharedSharedViewModel.getNotes()
       recyclerView = binding.notesRecyclerView
-      recyclerAdapter = NotesAdapter(notesList, this)
+      recyclerAdapter = NotesAdapter(notesList, this,sharedSharedViewModel)
       //recyclerAdapter = NotesAdapter(notesList, onItemClick = {note,position -> onNoteClick(note as Note,position) }, onItemLongClick = {note,position -> onNoteClick(note as Note,position) })
       recyclerView.adapter = recyclerAdapter
       recyclerView.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL,false)

@@ -26,6 +26,9 @@ class SharedViewModel : ViewModel() {
         _labelList[1] = (Label(1, "important"))
         _labelList[2] = (Label(2,"not important"))
 
+        _noteList[2]?.addLabelToThisNote(1)
+        _labelList[2]?.addNoteToThisLabel(2)
+
         _noteList[3] = (Note( "archived note one","details of archived note one", ARCHIVED,3))
         _noteList[4] = (Note( "archived note two","details of archived note two", ARCHIVED,4))
     }
@@ -55,6 +58,35 @@ class SharedViewModel : ViewModel() {
             labelList.add(i)
         return labelList
     }
+
+    fun addLabel(label:Label){
+        _labelList[nextLabelId++] = label
+    }
+
+    fun renameLabel(labelId:Int, newLabelName:String){
+        _labelList[labelId]?.labelName = newLabelName
+    }
+
+    fun deleteLabel(labelId: Int){
+        _labelList.remove(labelId)
+    }
+
+    fun addLabelWithNote(noteId: Int,labelId: Int){
+        _noteList[noteId]?.addLabelToThisNote(labelId)
+        _labelList[labelId]?.addNoteToThisLabel(noteId)
+    }
+
+    fun getLabelNamesInTheNote(noteId: Int):List<String>{
+        val labelName = mutableListOf<String>()
+        for (i in _noteList[noteId]?.getLabelsOfThisNote()!!)
+            labelName.add(_labelList[i]!!.labelName)
+        return labelName
+    }
+
+    fun getNotesOfTheLabel(labelId: Int):List<Int>{
+        return _labelList[labelId]?.getNotesOfThisLabel()!!
+    }
+
     //add label
     //rename label
     //delete label

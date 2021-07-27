@@ -43,7 +43,7 @@ class ArchiveFragment : Fragment(),ItemListener {
 
         archiveNotes = sharedSharedViewModel.getArchivedNotes()
         recyclerView = binding.archiveRecyclerView
-        recyclerAdapter = NotesAdapter(archiveNotes,  this)
+        recyclerAdapter = NotesAdapter(archiveNotes,  this,sharedSharedViewModel)
         //recyclerAdapter = NotesAdapter(archiveNotes, onItemClick = { note, position -> onArchiveNotesClick(note as Note,position)},onItemLongClick = {note,position -> onArchiveNotesClick(note as Note,position)})
         recyclerView.adapter = recyclerAdapter
         recyclerView.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL,false)
