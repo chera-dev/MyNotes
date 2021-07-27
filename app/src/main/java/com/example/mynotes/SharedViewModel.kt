@@ -97,6 +97,9 @@ class SharedViewModel : ViewModel() {
     //new fragment to display notes of that label
     //onclick on those displayed notes goes to details fragment
 
+    fun getNote(noteId: Int):Note{
+        return _noteList[noteId]!!
+    }
 
     fun pinNotes(noteId: Int){
         _noteList[noteId]?.pinned = PINNED

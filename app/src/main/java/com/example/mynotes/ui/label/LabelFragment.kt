@@ -14,13 +14,11 @@ import com.example.mynotes.MenuBottomDialog
 import com.example.mynotes.R
 import com.example.mynotes.SharedViewModel
 import com.example.mynotes.databinding.FragmentLabelBinding
-import com.example.mynotes.ui.ItemListener
-import com.example.mynotes.ui.Label
-import com.example.mynotes.ui.NotesAdapter
-import com.example.mynotes.ui.NotesDialogFragment
+import com.example.mynotes.ui.*
 import com.example.mynotes.ui.notes.NotesFragment
+import com.google.android.material.snackbar.Snackbar
 
-class LabelFragment : Fragment() ,ItemListener{
+class LabelFragment : Fragment() ,ItemListener, LabelClickListener{
 
     private var _binding: FragmentLabelBinding? = null
     // This property is only valid between onCreateView and
@@ -71,7 +69,7 @@ class LabelFragment : Fragment() ,ItemListener{
         val data:Label = recyclerAdapter.notesList[position] as Label
         //Toast.makeText(requireContext(),"in label fragment clicked label ${data.labelName}",Toast.LENGTH_SHORT).show()
         val fragmentManager = activity?.supportFragmentManager
-        val notesDialog = NotesDialogFragment(data.labelId)
+        val notesDialog = NotesDialogFragment(data.labelId,this)
         notesDialog.show(fragmentManager!!,"notesDialog")
         /*val transaction = activity?.supportFragmentManager?.beginTransaction()
         val notesFragment = NotesFragment()
@@ -101,5 +99,12 @@ class LabelFragment : Fragment() ,ItemListener{
                 labelList = sharedSharedViewModel.getLabel()
                 recyclerAdapter.changeData(labelList)
             }).show()
+    }
+
+    override fun onNoteClick(noteId: Int) {
+        val data = sharedSharedViewModel.getNote(noteId)
+        Snackbar.make(requireView(),"in label fragment ${data.noteTitle}",Snackbar.LENGTH_SHORT).show()
+        findNavController().navigate(LabelFragmentDirections.actionNavLabelToDetailsFragment(data.noteTitle,data.noteDetails
+        ,data.noteId.toString(),data.noteType.toString(),data.pinned.toString()))
     }
 }

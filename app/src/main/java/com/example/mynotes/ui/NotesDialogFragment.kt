@@ -4,10 +4,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.SearchView
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mynotes.R
@@ -15,7 +17,7 @@ import com.example.mynotes.SharedViewModel
 import com.example.mynotes.ui.notes.NotesFragmentDirections
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
-class NotesDialogFragment(val labelId:Int):DialogFragment(),ItemListener {
+class NotesDialogFragment(val labelId:Int, val labelClickListener: LabelClickListener):DialogFragment(),ItemListener {
     private val sharedSharedViewModel: SharedViewModel by activityViewModels()
     private lateinit var recyclerView: RecyclerView
     private lateinit var recyclerAdapter: NotesAdapter
@@ -25,8 +27,10 @@ class NotesDialogFragment(val labelId:Int):DialogFragment(),ItemListener {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_notes_dialog,container)
-        recyclerView = view.findViewById(R.id.notes_dialog_recycler_view)
+        val view = inflater.inflate(R.layout.fragment_notes,container)
+        view?.findViewById<SearchView>(R.id.search_bar)?.visibility = View.GONE
+        view?.findViewById<FloatingActionButton>(R.id.fab)?.visibility = View.GONE
+        recyclerView = view.findViewById(R.id.notes_recycler_view)
         //recyclerView.layoutParams.height = 1700
         //recyclerView.layoutParams.width = 1500
         notesList = sharedSharedViewModel.getNotesOfTheLabel(labelId)
@@ -44,12 +48,7 @@ class NotesDialogFragment(val labelId:Int):DialogFragment(),ItemListener {
     override fun onClick(position: Int) {
         val data:Note = recyclerAdapter.notesList[position] as Note
         Toast.makeText(requireContext(),"in dialog fragment clicked ${data.noteTitle}",Toast.LENGTH_SHORT).show()
-        //Toast.makeText(requireContext(),"in notes fragment clicked note ${data.noteTitle}", Toast.LENGTH_SHORT).show()
-
-        //not navigating
-        /*view?.findNavController()?.navigate(NotesDialogFragmentDirections.actionNotesDialogFragmentToDetailsFragment(
-            data.noteTitle,data.noteDetails,data.noteId.toString(),
-            Note.NOTES.toString(), data.pinned.toString()))*/
+        labelClickListener.onNoteClick(data.noteId)
         this.dismiss()
     }
 
